@@ -80,7 +80,7 @@ class AudioPluginV3{
 		return '1.3';
 	}
 	getAuthor(){
-		return 'Miau';
+		return 'Matues';
 	}
 
 	load(){
