@@ -1,110 +1,132 @@
-//META{"name": "AudioPlugin"}*//
+//META{"name": "AudioPluginV3"}*//
 
-class AudioPlugin{
-	getName(){return 'Enviar Audio';}
-	getDescription(){return 'Grava e envia áudios no chat.';}
-	getVersion(){return '1.0';}
-	getAuthor(){return 'Miau';}
+class RecordAudio{
+    constructor(){
+        this.record = null;
+        this.audioChunks = [];
+        this.audioBlob = null;
+        this.stoped = false;
+        this.started = false;
 
-	load(){}
+        this.audio = null;
+
+        navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+            this.record = new MediaRecorder(stream);
+            this.record.addEventListener('dataavailable', event => {
+               this.audioChunks.push(event.data);
+            });
+        });
+    }
+    start(){
+        if(this.record != null && !this.started){
+            this.record.start();
+            this.started = true;
+            return true;
+        }
+        return false;
+    }
+    stop(){
+        if(this.record != null && (this.started && !this.stoped)){
+            this.record.addEventListener('stop', () => {
+                this.audioBlob = new Blob(this.audioChunks, {type: 'audio/ogg'});
+              
+                this.audio = new Audio(URL.createObjectURL(this.audioBlob));
+
+                this.stoped = true;
+            });
+            this.record.stop();
+            return true;
+        }
+        return false;
+    }
+
+    reset(){
+        if(this.record != null && this.started){
+            if(!this.stoped){
+                this.stop();
+            }
+            this.audioChunks = [];
+            this.audioBlob = null;
+            this.stoped = false;
+            this.started = false;
+        }
+    }
+    play(){
+    	if(this.started && this.stoped){
+    		var promise = this.audio.play();
+
+    		if(promise != undefined){
+    			promise.then(_ => {
+    				this.audio.pause();
+    			}).catch(error => {
+    				console.error('RecordAudio', error);
+    			});
+    		}
+
+    		return true;
+    	}
+    	return false;
+    }
+}
+
+class AudioPluginV3{
+	getName(){
+		return 'Envia Áudio';
+	}
+	getDescription(){
+		return 'Grava e envia áudios no chat.';
+	}
+	getVersion(){
+		return '1.3';
+	}
+	getAuthor(){
+		return 'Miau';
+	}
+
+	load(){
+		console.log("Plugin Carregado!");
+	}
 
 	start(){
 		if(this.libStarted){
 			return;
 		}
+
+
 		const libLoadedEvent = () => {
 			try{
 				this.onLibLoaded();
 			}
-			catch(erro){
-				console.error(this.getName(), 'erro, o plugin não pode ser iniciado.', erro);
+			catch(error){
+				console.error(this.getName(), 'o plugin não pode ser iniciado.');
+
 				try{
 					this.stop();
 				}
-				catch(erro){
-					console.error(this.getName() + '.stop()', erro);
+				catch(error){
+					console.error(this.getName() + '.stop()', 'o plugin não pode ser parado.');
 				}
 			}
 		};
+
 		let lib = document.getElementById('NeatoBurritoLibrary');
+
 		if(!lib){
 			lib = document.createElement('script');
 			lib.id = 'NeatoBurritoLibrary';
 			lib.type = 'text/javascript';
-			//lib.src = 'https://raw.githack.com/Metalloriff/BetterDiscordPlugins/master/Lib/NeatoBurritoLibrary.js';
 			lib.src = 'https://rawgit.com/Metalloriff/BetterDiscordPlugins/master/Lib/NeatoBurritoLibrary.js';
 
 			document.head.appendChild(lib);
 
-			setTimeout(() => {
-			}, 100);
+			setTimeout(() => {}, 100);
 		}
 
-		let rcLib = document.getElementById('RecordAudioLib');
-
-
-		if(!rcLib){
-			rcLib = document.createElement('script');
-			rcLib.id = 'RecordAudioLib';
-			rcLib.type = 'text/javascript';
-			rcLib.innerHTML = `
-			class RecordAudio{
-			    constructor(){
-			        this.record = null;
-			        this.audioChunks = [];
-			        this.audioBlob = null;
-			        this.stoped = false;
-			        this.started = false;
-
-			        navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-			            this.record = new MediaRecorder(stream);
-			            this.record.addEventListener('dataavailable', event => {
-			               this.audioChunks.push(event.data);
-			            });
-			        });
-			    }
-			    start(){
-			        if(this.record != null && !this.started){
-			            this.record.start();
-			            this.started = true;
-			            return true;
-			        }
-			        return false;
-			    }
-			    stop(){
-			        if(this.record != null && (this.started && !this.stoped)){
-			            this.record.addEventListener('stop', () => {
-			                this.audioBlob = new Blob(this.audioChunks, {type: 'audio/ogg'});
-			              
-			                this.stoped = true;
-			            });
-			            this.record.stop();
-			            return true;
-			        }
-			        return false;
-			    }
-
-			    reset(){
-			        if(this.record != null && this.started){
-			            if(!this.stoped){
-			                this.stop();
-			            }
-			            this.audioChunks = [];
-			            this.audioBlob = null;
-			            this.stoped = false;
-			            this.started = false;
-			        }
-			    }
-			}
-			`;
-			document.head.appendChild(rcLib);
-		}
-		
-		let css = document.getElementById('GravarAudioCSS');
+		let css = document.getElementById('EnviarAudioPlugin');
 
 		if(!css){
 			css = document.createElement('style');
-			css.id = 'GravarAudioCSS';
+			css.id = 'EnviarAudioPlugin';
 			css.innerHTML = `
 				.mic-button{background: transparent;margin: 7px 0;}
 				.mic-button span svg{width: 24px;height: 24px;fill: #dcddde;fill-opacity: 0.45;}
@@ -134,23 +156,20 @@ class AudioPlugin{
 			lib.addEventListener('load', libLoadedEvent);
 		}
 		this.libStarted = true;
-
+		
 	}
 	onLibLoaded(){
 		try{
 			NeatoLib.Updates.check(this);
 			NeatoLib.Events.onPluginLoaded(this);
 		}
-		catch(erro){
+		catch(error){
 			console.log(`${this.getName()} Erro ao tentar carregar NeatoLib`);
 			this.stop();
 			return;
 		}
-		this.record = new RecordAudio();
-		
-		this.loadButtons();
 
-		this.timer = null;
+		this.record = new RecordAudio();
 
 		this.switchEvent = () => this.switch();
 
@@ -158,9 +177,7 @@ class AudioPlugin{
 
 		NeatoLib.Events.attach("switch", this.switchEvent);
 	}
-
 	switch(){
-		
 		const chatbox = NeatoLib.Chatbox.get();
 
 		if(chatbox == undefined){
@@ -168,37 +185,17 @@ class AudioPlugin{
 		}
 		this.loadButtons();
 		this.setDefaultButtons();
-
 	}
+
 	stop(){
 		try{
 			NeatoLib.Events.detach('swith', this.switchEvent);
 		}
 		catch(erro){}
-
-		let element = document.getElementById('audio_buttons');
-
-		if(element){
-			element.outerHTML = '';
-		}
-
-		element = document.querySelector('.buttons-205you');
-
-		if(element){
-			element.style.width = 'auto';
-		}
-
-		if(this.timer != null){
-			this.timer = null;
-			clearInterval(this.timer);
-		}
-		if(this.record != null){
-			this.stopRecord();
-		}
 	}
-	loadButtons(){
-		
 
+
+	loadButtons(){
 		let element = document.getElementById('audio_buttons');
 		if(!element){
 			let buttons205 = document.querySelector('.buttons-205you');
@@ -264,7 +261,6 @@ class AudioPlugin{
 			elements[1].addEventListener('click', onDA);
 
 			elements[4].addEventListener('click', onSA);
-
 		}
 	}
 	setDefaultButtons(){
@@ -404,22 +400,26 @@ class AudioPlugin{
 				return this.record.play();
 			}, 100);
 		}
-		catch(erro){
+		catch(error){
+			console.error(this.getName() + '.playRecord()', error);
 			return false;
 		}
 	}
 	onRecordStoped(){
 
 		const selectedChannel = NeatoLib.getSelectedTextChannel();
-		const date = new Date().toISOString();
-		const fname = this.randomKey() + '-'  + date.substr(0, 10) + '-' + date.substr(11, 8) + '.ogg';
+		let date_ = new Date();
+
+		date_ = new Date(date_.getTime() - (date_.getTimezoneOffset() * 60000)).toISOString();
+
+		const fname = this.randomKey() + '-'  + date_.substr(0, 10) + '-' + date_.substr(11, 8).replace(/:/g, '-') + '.ogg';
 
 		if(selectedChannel == undefined){
 			return;
 		}
-		NeatoLib.Modules.get("upload").upload(selectedChannel.id, new File([this.record.audioBlob], fname), {content: '', tts: false});
+		NeatoLib.Modules.find(m => m.upload && typeof m.upload === 'function').upload(selectedChannel.id, new File([this.record.audioBlob], fname), {content: '', tts: false});
 
-		//this.playRecord();
+		this.playRecord();
 	}
 	random(max, min){
 		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -428,3 +428,5 @@ class AudioPlugin{
 		return String.fromCharCode(this.random(65, 90)) + String.fromCharCode(this.random(48, 57)) + String.fromCharCode(this.random(97, 122));
 	}
 }
+
+
