@@ -168,6 +168,7 @@ class AudioPluginV3{
 			this.stop();
 			return;
 		}
+		this.timer = null;
 
 		this.record = new RecordAudio();
 
@@ -191,7 +192,32 @@ class AudioPluginV3{
 		try{
 			NeatoLib.Events.detach('swith', this.switchEvent);
 		}
-		catch(erro){}
+		catch(error){
+			console.error(this.getName() + '.stop()', error);
+		}
+
+		let element = document.getElementById('audio_buttons');
+
+		if(element){
+			element.outerHTML = '';
+		}
+
+		element = document.querySelector('.buttons-205you');
+
+		if(element){
+			element.style.width = 'auto';
+		}
+		element = document.getElementById('EnviarAudioPlugin');
+		if(element){
+			element.outerHTML = '';
+		}
+		if(this.timer != null){
+			this.timer = null;
+			clearInterval(this.timer);
+		}
+		if(this.record != null){
+			this.stopRecord();
+		}
 	}
 
 
@@ -428,5 +454,3 @@ class AudioPluginV3{
 		return String.fromCharCode(this.random(65, 90)) + String.fromCharCode(this.random(48, 57)) + String.fromCharCode(this.random(97, 122));
 	}
 }
-
-
