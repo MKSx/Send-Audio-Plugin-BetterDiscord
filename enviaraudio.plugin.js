@@ -83,103 +83,62 @@ class AudioPluginV3{
 		return 'Matues';
 	}
 
-	load(){
-		console.log("Plugin Carregado!");
+	load(){}
+
+	getSelectedTextChannel(){
+		return BDV2.WebpackModules.find(module => ["getChannel", "getChannels"].every(module_name => module[module_name] != undefined))['getChannel'](BDV2.WebpackModules.find(module => ["getChannelId", "getVoiceChannelId"].every(module_name => module[module_name] != undefined))['getChannelId']());
 	}
 
 	start(){
 		if(this.libStarted){
 			return;
 		}
-
-
 		const libLoadedEvent = () => {
 			try{
 				this.onLibLoaded();
 			}
 			catch(error){
 				console.error(this.getName(), 'o plugin não pode ser iniciado.');
-
-				try{
-					this.stop();
-				}
-				catch(error){
-					console.error(this.getName() + '.stop()', 'o plugin não pode ser parado.');
-				}
 			}
 		};
-
-		let lib = document.getElementById('NeatoBurritoLibrary');
-
-		if(!lib){
-			lib = document.createElement('script');
-			lib.id = 'NeatoBurritoLibrary';
-			lib.type = 'text/javascript';
-			lib.src = 'https://rawgit.com/Metalloriff/BetterDiscordPlugins/master/Lib/NeatoBurritoLibrary.js';
-
-			document.head.appendChild(lib);
-
-			setTimeout(() => {}, 100);
-		}
-
 		let css = document.getElementById('EnviarAudioPlugin');
-
 		if(!css){
 			css = document.createElement('style');
 			css.id = 'EnviarAudioPlugin';
 			css.innerHTML = `
 				.mic-button{background: transparent;margin: 7px 0;}
-				.mic-button span svg{width: 24px;height: 24px;fill: #dcddde;fill-opacity: 0.45;}
-				.mic-button:hover span svg{width: 26px !important;height: 26px !important;fill: white !important;fill-opacity: 100;}
+				.mic-button span svg{width: 24px;height: 24px;fill: #dcddde;fill-opacity: 0.45;transform: scale(1);}
+				.mic-button:hover span svg{transform: scale(1.14);fill: white !important;fill-opacity: 100;}
 				.mic-trash{background: transparent;margin: 7px 0;}
-				.mic-trash svg{width: 24px;height: 24px;fill: #cc3d3d;fill-opacity: 100;}
-				.mic-trash:hover svg{width: 26px; height: 26px;fill: red;}
+				.mic-trash svg{width: 24px;height: 24px;fill: #cc3d3d;fill-opacity: 100;transform: scale(1);}
+				.mic-trash:hover svg{transform: scale(1.14);fill: red;}
 				.mic-send{background: transparent;margin: 7px 0;}
 				.mic-send svg{width: 24px;height: 24px;border: 1px solid rgb(50, 190, 166);border-radius: 590%;}
 				.mic-send svg path:first-child{fill: transparent;border: 1px solid rgb(50, 190, 166);}
 				.mic-send svg path:last-child{fill: #dcddde;fill-opacity: 100;}
-				.mic-send:hover svg{width: 26px; height: 26px;}
+				.mic-send:hover svg{transform: scale(1.14);}
 				.flash-record{width: 14px;height: 14px;position: relative;top: 2px;margin: 0 2px;animation: flash linear 1s infinite;}
 				@keyframes flash{0% {opacity: 1;}50% {opacity: .1;}100% {opacity: 1;}}
-				.record-time{margin: 0;position:relative;top:-5px;}
-				.record-time div{color: #dcddde;display: inline;}
+				.record-time{display: flex;align-items: center;}
+				.record-time input{margin-left: 5px;background: transparent;color: #dcddde;width: 4.2em;border: none;}
 			`;
 			document.head.appendChild(css);
 		}
 
-		this.forceLoadTimeout = setTimeout(libLoadedEvent, 30000);
+		libLoadedEvent();
 
-		if(typeof window.NeatoLib != 'undefined'){
-			libLoadedEvent();
-		}
-		else{
-			lib.addEventListener('load', libLoadedEvent);
-		}
 		this.libStarted = true;
 		
 	}
 	onLibLoaded(){
-		try{
-			NeatoLib.Updates.check(this);
-			NeatoLib.Events.onPluginLoaded(this);
-		}
-		catch(error){
-			console.log(`${this.getName()} Erro ao tentar carregar NeatoLib`);
-			this.stop();
-			return;
-		}
 		this.timer = null;
 
 		this.record = new RecordAudio();
 
-		this.switchEvent = () => this.switch();
-
-		this.switch();
-
-		NeatoLib.Events.attach("switch", this.switchEvent);
+		this.onSwitch();
 	}
-	switch(){
-		const chatbox = NeatoLib.Chatbox.get();
+	onSwitch(){
+		const chatbox = this.getSelectedTextChannel();
 
 		if(chatbox == undefined){
 			return;
@@ -189,12 +148,6 @@ class AudioPluginV3{
 	}
 
 	stop(){
-		try{
-			NeatoLib.Events.detach('switch', this.switchEvent);
-		}
-		catch(error){
-			console.error(this.getName() + '.stop()', error);
-		}
 
 		let element = document.getElementById('audio_buttons');
 
@@ -205,7 +158,7 @@ class AudioPluginV3{
 		element = document.querySelector('.buttons-205you');
 
 		if(element){
-			element.style.width = 'auto';
+			element.style.minWidth = '';
 		}
 		element = document.getElementById('EnviarAudioPlugin');
 		if(element){
@@ -218,6 +171,7 @@ class AudioPluginV3{
 		if(this.record != null){
 			this.stopRecord();
 		}
+		this.libStarted = false;
 	}
 
 
@@ -229,11 +183,11 @@ class AudioPluginV3{
 			if(!buttons205){
 				return;
 			}
-
-			buttons205.style.width = 'auto';
+			buttons205.style.minWidth = '';
 
 			element = document.createElement('div');
 			element.id = 'audio_buttons';
+			element.style.display = 'inherit';
 			element.innerHTML = `
 				<button class="mic-button" id='gravar_audio'>
 					<span data-icon="ptt">
@@ -248,12 +202,13 @@ class AudioPluginV3{
 						<path d="M342.3,132.9c-5.3-5.3-13.8-5.3-19.1,0l-85.6,85.6L152,132.9c-5.3-5.3-13.8-5.3-19.1,0c-5.3,5.3-5.3,13.8,0,19.1l85.6,85.6l-85.6,85.6c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4l85.6-85.6l85.6,85.6c2.6,2.6,6.1,4,9.5,4c3.5,0,6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1l-85.4-85.6l85.6-85.6C347.6,146.7,347.6,138.2,342.3,132.9z"></path>
 					</svg>
 				</button>
-				<div class='record-time' id='div_temp_audio' style='display: none;'>
+				<div class='record-time' id='div_temp_audio' style="display: none;">
 					<svg class="flash-record" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 						<path fill="#FF0000" d="M504.1,256C504.1,119,393,7.9,256,7.9C119,7.9,7.9,119,7.9,256C7.9,393,119,504.1,256,504.1C393,504.1,504.1,393,504.1,256z"></path>
 					</svg>
-					<div id='tempo_audio'>00:00:00</div>
+					<input type="text" id='tempo_audio' value="00:00:00" readonly="">
 				</div>
+
 				<button class='mic-send' id='enviar_audio' style='display: none;'>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
 						<path d="M504.1,256C504.1,119,393,7.9,256,7.9C119,7.9,7.9,119,7.9,256C7.9,393,119,504.1,256,504.1C393,504.1,504.1,393,504.1,256z"></path>
@@ -305,7 +260,7 @@ class AudioPluginV3{
 
 		let bt = document.querySelector('.buttons-205you');
 		if(bt){
-			bt.style.width = 'auto';
+			bt.style.minWidth = '';
 		}
 
 		elements[0] = document.getElementById('gravar_audio');
@@ -327,7 +282,8 @@ class AudioPluginV3{
 		elements[1].style.display = 'none';
 		elements[2].style.display = 'none';
 		elements[4].style.display = 'none';
-		elements[3].innerHTML = '00:00:00';
+		elements[3].value = '00:00:00';
+
 	}
 	setButtonRecord(){
 		let element = document.getElementById('audio_buttons');
@@ -345,12 +301,13 @@ class AudioPluginV3{
 		let bt = document.querySelector('.buttons-205you');
 
 		if(bt){
-			bt.style.width = '34%';
+			bt.style.minWidth = '270px';
+
 		}
 
 		elements[0].style.display = 'none';
 		elements[1].style.display = 'inline';
-		elements[2].style.display = 'inline';
+		elements[2].style.display = 'flex';
 		elements[4].style.display = 'inline';
 		return 1;
 	}
@@ -364,7 +321,7 @@ class AudioPluginV3{
 
 			this.timer = setInterval(() => {
 				seconds++;
-				element.innerHTML = new Date(seconds * 1000).toISOString().substr(11, 8);
+				element.value = new Date(seconds * 1000).toISOString().substr(11, 8);
 
 			}, 1000);
 
@@ -372,7 +329,6 @@ class AudioPluginV3{
 		else{
 			this.setDefaultButtons();
 		}
-
 	}
 	onDeleteAudioClick(){
 		this.setDefaultButtons();
@@ -432,8 +388,7 @@ class AudioPluginV3{
 		}
 	}
 	onRecordStoped(){
-
-		const selectedChannel = NeatoLib.getSelectedTextChannel();
+		const selectedChannel = this.getSelectedTextChannel();
 		let date_ = new Date();
 
 		date_ = new Date(date_.getTime() - (date_.getTimezoneOffset() * 60000)).toISOString();
@@ -443,8 +398,7 @@ class AudioPluginV3{
 		if(selectedChannel == undefined){
 			return;
 		}
-		NeatoLib.Modules.find(m => m.upload && typeof m.upload === 'function').upload(selectedChannel.id, new File([this.record.audioBlob], fname), {content: '', tts: false});
-
+		BDV2.WebpackModules.find(m => m.upload && typeof m.upload === 'function').upload(selectedChannel.id, new File([this.record.audioBlob], fname), {content: '', tts: false});
 		this.playRecord();
 	}
 	random(max, min){
