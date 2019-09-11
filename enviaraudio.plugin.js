@@ -190,7 +190,7 @@ class AudioPluginV3{
 
 	stop(){
 		try{
-			NeatoLib.Events.detach('swith', this.switchEvent);
+			NeatoLib.Events.detach('switch', this.switchEvent);
 		}
 		catch(error){
 			console.error(this.getName() + '.stop()', error);
