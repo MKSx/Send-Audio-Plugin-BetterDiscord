@@ -76,9 +76,7 @@ class AudioPluginV3{
 	getDescription(){
 		return 'Grava e envia áudios no chat.';
 	}
-	getVersion(){
-		return '1.3';
-	}
+	getVersion(){ return '1.3.0'; }
 	getAuthor(){
 		return 'Matues';
 	}
