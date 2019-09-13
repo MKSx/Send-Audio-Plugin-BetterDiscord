@@ -1,4 +1,4 @@
-//META{"name": "AudioPluginV3", "version": "1.3.0", "source": "https://github.com/MKSx/EnviarAudio-BetterDiscord/blob/master/enviaraudio.plugin.js"}*//
+//META{"name": "AudioPlugin", "version": "1.3.1", "source": "https://github.com/MKSx/EnviarAudio-BetterDiscord/blob/master/enviaraudio.plugin.js", "website": "https://github.com/MKSx/EnviarAudio-BetterDiscord"}*//
 
 class RecordAudio{
     constructor(){
@@ -69,14 +69,14 @@ class RecordAudio{
     }
 }
 
-class AudioPluginV3{
+class AudioPlugin{
 	getName(){
 		return 'Envia Áudio';
 	}
 	getDescription(){
 		return 'Grava e envia áudios no chat.';
 	}
-	getVersion(){ return '1.3.0'; }
+	getVersion(){ return '1.3.1'; }
 	getAuthor(){
 		return 'Matues';
 	}
@@ -137,8 +137,9 @@ class AudioPluginV3{
 	}
 	onSwitch(){
 		const chatbox = this.getSelectedTextChannel();
+		const uploadButton = document.getElementsByClassName('attachButton-1UjEWA');
 
-		if(chatbox == undefined){
+		if(chatbox == undefined || uploadButton == undefined || uploadButton[0] == undefined){
 			return;
 		}
 		this.loadButtons();
@@ -153,11 +154,6 @@ class AudioPluginV3{
 			element.outerHTML = '';
 		}
 
-		element = document.querySelector('.buttons-205you');
-
-		if(element){
-			element.style.minWidth = '';
-		}
 		element = document.getElementById('EnviarAudioPlugin');
 		if(element){
 			element.outerHTML = '';
@@ -181,7 +177,6 @@ class AudioPluginV3{
 			if(!buttons205){
 				return;
 			}
-			buttons205.style.minWidth = '';
 
 			element = document.createElement('div');
 			element.id = 'audio_buttons';
@@ -216,14 +211,6 @@ class AudioPluginV3{
 			`;
 			buttons205.appendChild(element);
 
-			let elements = [];
-
-			elements[0] = document.getElementById('gravar_audio');
-			elements[1] = document.getElementById('deletar_audio');
-			elements[2] = document.getElementById('div_temp_audio');
-			elements[3] = document.getElementById('tempo_audio');
-			elements[4] = document.getElementById('enviar_audio');
-
 			const onMC = () => {
 				this.onMicrophoneClick();
 			};
@@ -235,11 +222,18 @@ class AudioPluginV3{
 			const onSA = () => {
 				this.onSendAudioClick();
 			};
-			elements[0].addEventListener('click', onMC);
 
-			elements[1].addEventListener('click', onDA);
+			try{
+				document.getElementById('gravar_audio').addEventListener('click', onMC);
 
-			elements[4].addEventListener('click', onSA);
+				document.getElementById('deletar_audio').addEventListener('click', onDA);
+
+				document.getElementById('enviar_audio').addEventListener('click', onSA);
+			}
+			catch(err){
+				console.error(this.getName(), err);
+				this.loadButtons();
+			}
 		}
 	}
 	setDefaultButtons(){
@@ -254,33 +248,19 @@ class AudioPluginV3{
 		if(!element){
 			return;
 		}
-		let elements = [];
 
-		let bt = document.querySelector('.buttons-205you');
-		if(bt){
-			bt.style.minWidth = '';
+		try{
+			document.getElementById('gravar_audio').style.display = '';
+			document.getElementById('deletar_audio').style.display = 'none';
+			document.getElementById('div_temp_audio').style.display = 'none';
+			document.getElementById('tempo_audio').value = '00:00:00';
+			document.getElementById('enviar_audio').style.display = 'none';
 		}
-
-		elements[0] = document.getElementById('gravar_audio');
-		elements[1] = document.getElementById('deletar_audio');
-		elements[2] = document.getElementById('div_temp_audio');
-		elements[3] = document.getElementById('tempo_audio');
-		elements[4] = document.getElementById('enviar_audio');
-
-		for(let i = 0; i < elements.length; i++){
-			if(!elements[i]){
-				element.outerHTML = '';
-				this.loadButtons();
-				return;
-			}
-			
+		catch(err){
+			console.error(this.getName(), err);
+			element.outerHTML = '';
+			this.loadButtons();
 		}
-
-		elements[0].style.display = '';
-		elements[1].style.display = 'none';
-		elements[2].style.display = 'none';
-		elements[4].style.display = 'none';
-		elements[3].value = '00:00:00';
 
 	}
 	setButtonRecord(){
@@ -288,25 +268,10 @@ class AudioPluginV3{
 		if(!element){
 			return;
 		}
-		let elements = [];
-
-		elements[0] = document.getElementById('gravar_audio');
-		elements[1] = document.getElementById('deletar_audio');
-		elements[2] = document.getElementById('div_temp_audio');
-		elements[3] = document.getElementById('tempo_audio');
-		elements[4] = document.getElementById('enviar_audio');
-
-		let bt = document.querySelector('.buttons-205you');
-
-		if(bt){
-			bt.style.minWidth = '270px';
-
-		}
-
-		elements[0].style.display = 'none';
-		elements[1].style.display = 'inline';
-		elements[2].style.display = 'flex';
-		elements[4].style.display = 'inline';
+		document.getElementById('gravar_audio').style.display = 'none';;
+		document.getElementById('deletar_audio').style.display = 'flex';
+		document.getElementById('div_temp_audio').style.display = 'flex';
+		document.getElementById('enviar_audio').style.display = 'flex';
 		return 1;
 	}
 	onMicrophoneClick(){
