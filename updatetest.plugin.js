@@ -1,11 +1,11 @@
-//META{"name": "UpdateTest", "version": "0.1.2", "source": "https://github.com/MKSx/EnviarAudio-BetterDiscord/blob/master/updatetest.plugin.js"}*//
+//META{"name": "UpdateTest", "version": "0.1.3", "source": "https://github.com/MKSx/EnviarAudio-BetterDiscord/blob/master/updatetest.plugin.js"}*//
 
 class UpdateTest{
 	getName(){
 		return "Update Test";
 	}
 	getVersion(){
-		return "0.1.1";
+		return "0.1.3";
 	}
 	getAuthor(){
 		return "Matues";
@@ -23,6 +23,6 @@ class UpdateTest{
 	stop(){}
 
 	onSwitch(){
-		console.log("SWITCH");
+		console.log("SWITCH2");
 	}
 }
