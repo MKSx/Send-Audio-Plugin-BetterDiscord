@@ -1,4 +1,4 @@
-//META{"name": "AudioPlugin", "version": "1.3.1", "source": "https://github.com/MKSx/EnviarAudio-BetterDiscord/blob/master/enviaraudio.plugin.js", "website": "https://github.com/MKSx/EnviarAudio-BetterDiscord"}*//
+//META{"name": "AudioPlugin", "source": "https://github.com/MKSx/EnviarAudio-BetterDiscord/blob/master/enviaraudio.plugin.js", "website": "https://github.com/MKSx/EnviarAudio-BetterDiscord"}*//
 
 class RecordAudio{
     constructor(){
@@ -76,7 +76,7 @@ class AudioPlugin{
 	getDescription(){
 		return 'Grava e envia áudios no chat.';
 	}
-	getVersion(){ return '1.3.1'; }
+	getVersion(){return '1.3.2';}
 	getAuthor(){
 		return 'Matues';
 	}
@@ -86,24 +86,14 @@ class AudioPlugin{
 	getSelectedTextChannel(){
 		return BDV2.WebpackModules.find(module => ["getChannel", "getChannels"].every(module_name => module[module_name] != undefined))['getChannel'](BDV2.WebpackModules.find(module => ["getChannelId", "getVoiceChannelId"].every(module_name => module[module_name] != undefined))['getChannelId']());
 	}
-
 	start(){
-		if(this.libStarted){
-			return;
-		}
-		const libLoadedEvent = () => {
-			try{
-				this.onLibLoaded();
-			}
-			catch(error){
-				console.error(this.getName(), 'o plugin não pode ser iniciado.');
-			}
-		};
-		let css = document.getElementById('EnviarAudioPlugin');
-		if(!css){
-			css = document.createElement('style');
-			css.id = 'EnviarAudioPlugin';
-			css.innerHTML = `
+	
+
+		let lib = document.getElementById('EnviarAudioPlugin');
+		if(!lib){
+			lib = document.createElement('style');
+			lib.id = 'EnviarAudioPlugin';
+			lib.innerHTML = `
 				.mic-button{background: transparent;margin: 7px 0;}
 				.mic-button span svg{width: 24px;height: 24px;fill: #dcddde;fill-opacity: 0.45;transform: scale(1);}
 				.mic-button:hover span svg{transform: scale(1.14);fill: white !important;fill-opacity: 100;}
@@ -120,20 +110,33 @@ class AudioPlugin{
 				.record-time{display: flex;align-items: center;}
 				.record-time input{margin-left: 5px;background: transparent;color: #dcddde;width: 4.2em;border: none;}
 			`;
-			document.head.appendChild(css);
+			document.head.appendChild(lib);
 		}
 
-		libLoadedEvent();
+		lib = document.getElementById("ZLibraryScript");
 
-		this.libStarted = true;
+		if(!lib || !window.ZLibrary){
+			if(lib) lib.parentElement.removeChild(lib);
+
+			lib = document.createElement("script");
+            lib.setAttribute("type", "text/javascript");
+            lib.setAttribute("src", "https://rauenzi.github.io/BDPluginLibrary/release/ZLibrary.js");
+            lib.setAttribute("id", "ZLibraryScript");
+            document.head.appendChild(lib);
+		}
+
+		if(window.ZLibrary) this.initialize();
+        else lib.addEventListener("load", () => { this.initialize(); });
 		
 	}
-	onLibLoaded(){
+	initialize(){
 		this.timer = null;
 
 		this.record = new RecordAudio();
 
 		this.onSwitch();
+
+	 	ZLibrary.PluginUpdater.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/MKSx/EnviarAudio-BetterDiscord/master/enviaraudio.plugin.js");
 	}
 	onSwitch(){
 		const chatbox = this.getSelectedTextChannel();
@@ -165,7 +168,6 @@ class AudioPlugin{
 		if(this.record != null){
 			this.stopRecord();
 		}
-		this.libStarted = false;
 	}
 
 
