@@ -31,7 +31,7 @@ var SendAudio = (() => {
 			catch(err) {reject(err);}
 		});
 	});
-	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.0.2","description":"Record and send audios in chat","github":"https://github.com/MKSx/Send-Audio-Plugin-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","id":"sendtext","name":"Send text message along with audio","value":false}]};
+	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.0.0","description":"Record and send audios in chat","github":"https://github.com/MKSx/Send-Audio-Plugin-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","id":"sendtext","name":"Send text message along with audio","value":false}]};
 	const compilePlugin = ([Plugin, Api]) => {
 		const plugin = (Plugin, Api) => {
 	const {PluginUtilities, DiscordModules} = Api;
