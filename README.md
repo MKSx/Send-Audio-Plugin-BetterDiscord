@@ -1,2 +1,2 @@
-# EnviarAudio-BetterDiscord
-Grava e envia áudios para uma pessoa
+# Send Audio Plugin
+Record and send audios in chat
