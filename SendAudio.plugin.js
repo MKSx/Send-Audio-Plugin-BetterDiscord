@@ -1,4 +1,4 @@
-//META{"name":"SendAudio","displayName":"SendAudio","website":"https://github.com/MKSx/Send-Audio-Plugin-BetterDiscord","source":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"}*//
+//META{"name":"SendAudio","displayName":"SendAudio","website":"https://github.com/MKSx/EnviarAudio-BetterDiscord","source":""}*//
 /*@cc_on
 @if (@_jscript)
 	
@@ -31,7 +31,7 @@ var SendAudio = (() => {
 			catch(err) {reject(err);}
 		});
 	});
-	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.0.0","description":"Record and send audios in chat","github":"https://github.com/MKSx/Send-Audio-Plugin-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","id":"sendtext","name":"Send text message along with audio","value":false}]};
+	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.0.1","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":""},"changelog":[{"title":"Bugs Squashed","type":"fixed","items":["CSS class renamed","Minor design error"]}],"main":"index.js","defaultConfig":[{"type":"switch","id":"sendtext","name":"Send text message along with audio","value":false}]};
 	const compilePlugin = ([Plugin, Api]) => {
 		const plugin = (Plugin, Api) => {
 	const {PluginUtilities, DiscordModules} = Api;
@@ -59,7 +59,7 @@ var SendAudio = (() => {
 		let element = document.getElementById('audio_buttons');
 
 		if(!element){
-			let buttons205 = document.querySelector('.buttons-205you');
+			let buttons205 = document.querySelector('.buttons-3JBrkn');
 
 			if(!buttons205){
 				return false;
@@ -146,7 +146,7 @@ var SendAudio = (() => {
 				.mic-trash{background: transparent;margin: 7px 0;}
 				.mic-trash svg{width: 24px;height: 24px;fill: #cc3d3d;fill-opacity: 100;transform: scale(1);}
 				.mic-trash:hover svg{transform: scale(1.14);fill: red;}
-				.mic-send{background: transparent;margin: 7px 0;}
+				.mic-send{background: transparent;margin: 7px 2px;}
 				.mic-send svg{width: 24px;height: 24px;border: 1px solid rgb(50, 190, 166);border-radius: 590%;}
 				.mic-send svg path:first-child{fill: transparent;border: 1px solid rgb(50, 190, 166);}
 				.mic-send svg path:last-child{fill: rgb(50, 190, 166);}
@@ -191,17 +191,17 @@ var SendAudio = (() => {
 			}
 		}
 		onSwitch(){
-			const uploadButton = document.getElementsByClassName('attachButton-1UjEWA');
+
+			const uploadButton = document.getElementsByClassName('attachButton-2WznTc');
 
 			const channel = ChannelStore.getChannel(SelectedChannelStore.getChannelId());
 
 			if(!channel || !uploadButton || uploadButton[0] == undefined){
 				return;
 			}
-
+			
 			loadButtons(this);
 			this.setDefaultButtons();
-
 		}
 		setDefaultButtons(){
 			if(this.timer != null){
@@ -258,7 +258,7 @@ var SendAudio = (() => {
 		onRecordStoped(){
 			const channel = ChannelStore.getChannel(SelectedChannelStore.getChannelId());
 
-			if(!channel){
+			if(!channel || !this.record.started || this.record.media == 'recording'){
 				return false;
 			}
 
