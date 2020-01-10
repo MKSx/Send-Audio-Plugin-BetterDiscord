@@ -24,16 +24,40 @@
 @else@*/
 
 var SendAudio = (() => {
-	if (!global.ZLibrary && !global.ZLibraryPromise) global.ZLibraryPromise = new Promise((resolve, reject) => {
-		require("request").get({url: "https://rauenzi.github.io/BDPluginLibrary/release/ZLibrary.js", timeout: 10000}, (err, res, body) => {
-			if (err || 200 !== res.statusCode) return reject(err || res.statusMessage);
-			try {const vm = require("vm"), script = new vm.Script(body, {displayErrors: true}); resolve(script.runInThisContext());}
-			catch(err) {reject(err);}
-		});
-	});
-	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.0.1","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":""},"changelog":[{"title":"Bugs Squashed","type":"fixed","items":["CSS class renamed","Minor design error"]}],"main":"index.js","defaultConfig":[{"type":"switch","id":"sendtext","name":"Send text message along with audio","value":false}]};
-	const compilePlugin = ([Plugin, Api]) => {
-		const plugin = (Plugin, Api) => {
+    const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.0.2","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":""},"main":"index.js"};
+
+    return !global.ZeresPluginLibrary ? class {
+        constructor() {this._config = config;}
+        getName() {return config.info.name;}
+        getAuthor() {return config.info.authors.map(a => a.name).join(", ");}
+        getDescription() {return config.info.description;}
+        getVersion() {return config.info.version;}
+        load() {
+            const title = "Library Missing";
+            const ModalStack = BdApi.findModuleByProps("push", "update", "pop", "popWithKey");
+            const TextElement = BdApi.findModuleByProps("Sizes", "Weights");
+            const ConfirmationModal = BdApi.findModule(m => m.defaultProps && m.key && m.key() == "confirm-modal");
+            if (!ModalStack || !ConfirmationModal || !TextElement) return BdApi.alert(title, `The library plugin needed for ${config.info.name} is missing.<br /><br /> <a href="https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js" target="_blank">Click here to download the library!</a>`);
+            ModalStack.push(function(props) {
+                return BdApi.React.createElement(ConfirmationModal, Object.assign({
+                    header: title,
+                    children: [TextElement({color: TextElement.Colors.PRIMARY, children: [`The library plugin needed for ${config.info.name} is missing. Please click Download Now to install it.`]})],
+                    red: false,
+                    confirmText: "Download Now",
+                    cancelText: "Cancel",
+                    onConfirm: () => {
+                        require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async (error, response, body) => {
+                            if (error) return require("electron").shell.openExternal("https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js");
+                            await new Promise(r => require("fs").writeFile(require("path").join(ContentManager.pluginsFolder, "0PluginLibrary.plugin.js"), body, r));
+                        });
+                    }
+                }, props));
+            });
+        }
+        start() {}
+        stop() {}
+    } : (([Plugin, Api]) => {
+        const plugin = (Plugin, Api) => {
 	const {PluginUtilities, DiscordModules} = Api;
 
 	const SelectedChannelStore = DiscordModules.SelectedChannelStore;
@@ -268,18 +292,7 @@ var SendAudio = (() => {
 
 			const fname = randomKey() + '-'  + date_.substr(0, 10) + '-' + date_.substr(11, 8).replace(/:/g, '-') + '.ogg';
 
-			let content = '';
-
-			if(this.settings.sendtext){
-				content = getTextArea().value;
-				getTextArea().value = '';
-			}
-
-			Upload.upload(channel.id, new File([this.record.audioBlob], fname), {content: content, tts: false});
-		}
-
-		getSettingsPanel(){          
-            return this.buildSettingsPanel().getElement();
+			Upload.upload(channel.id, new File([this.record.audioBlob], fname), {content: '', tts: false});
 		}
 
 		resetRecord(){
@@ -332,27 +345,7 @@ var SendAudio = (() => {
 		}
 	};
 };
-		return plugin(Plugin, Api);
-	};
-	
-	return !global.ZLibrary ? class {
-		getName() {return config.info.name.replace(" ", "");} getAuthor() {return config.info.authors.map(a => a.name).join(", ");} getDescription() {return config.info.description;} getVersion() {return config.info.version;} stop() {}
-		showAlert() {window.BdApi.alert("Loading Error",`Something went wrong trying to load the library for the plugin. You can try using a local copy of the library to fix this.<br /><br /><a href="https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js" target="_blank">Click here to download the library!</a>`);}
-		async load() {
-			try {await global.ZLibraryPromise;}
-			catch(err) {return this.showAlert();}
-			const vm = require("vm"), plugin = compilePlugin(global.ZLibrary.buildPlugin(config));
-			try {new vm.Script(plugin, {displayErrors: true});} catch(err) {return bdpluginErrors.push({name: this.getName(), file: this.getName() + ".plugin.js", reason: "Plugin could not be compiled.", error: {message: err.message, stack: err.stack}});}
-			global[this.getName()] = plugin;
-			try {new vm.Script(`new global["${this.getName()}"]();`, {displayErrors: true});} catch(err) {return bdpluginErrors.push({name: this.getName(), file: this.getName() + ".plugin.js", reason: "Plugin could not be constructed", error: {message: err.message, stack: err.stack}});}
-			bdplugins[this.getName()].plugin = new global[this.getName()]();
-			bdplugins[this.getName()].plugin.load();
-		}
-		async start() {
-			try {await global.ZLibraryPromise;}
-			catch(err) {return this.showAlert();}
-			bdplugins[this.getName()].plugin.start();
-		}
-	} : compilePlugin(global.ZLibrary.buildPlugin(config));
+        return plugin(Plugin, Api);
+    })(global.ZeresPluginLibrary.buildPlugin(config));
 })();
 /*@end@*/
