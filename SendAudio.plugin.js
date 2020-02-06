@@ -27,7 +27,7 @@ if(!('SendAudio_downloadModal' in global))
 	global.SendAudio_downloadModal = false;
 
 var SendAudio = (() => {
-	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.1.1","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","name":"Preview the audio before sending","id":"preview","value":true},{"type":"switch","name":"Increases the audio size limit from 8 MB to 50 MB (if you are a nitro user)","id":"nitro","value":false}],"changelog":[{"title":"Add","items":["Audio preview","Continue recording on other channels","Pause/Resume recording","File size limit, 50 MB for nitro users and 8 MB for others"]}]};
+	const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.1.2","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","name":"Preview the audio before sending","id":"preview","value":true},{"type":"switch","name":"Increases the audio size limit from 8 MB to 50 MB (if you are a nitro user)","id":"nitro","value":false}],"changelog":[{"title":"Bugs Fixed", "type":"fixed","items":["Design bug"]}]};
 
 	//local lib not found
 	if(typeof global.ZeresPluginLibrary != 'function'){
@@ -117,7 +117,9 @@ var SendAudio = (() => {
 			let element = document.createElement('div');
 			element.className = 'panel-24C3ux da-panel activityPanel-28dQGo da-activityPanel';
 			element.id = id;
+			element.style.display = 'flex';
 			element.innerHTML = html;
+
 
 			dom.insertBefore(element, dom.firstChild);
 			return true;	
@@ -162,7 +164,7 @@ var SendAudio = (() => {
 		},
 		createPlayer: (id) => {
 			if(SendAudioUtil.createPanel(`
-			<div class='emilay-player'>
+			<div class='emilay-player' style='width: 100%'>
 				<div role='header'>
 					<div role='title'></div>
 					<div role='close'>
@@ -171,7 +173,7 @@ var SendAudio = (() => {
 						</svg>
 					</div>
 				</div>
-				<div role='controller'>
+				<div role='controller' style='margin: 10px 0;'>
 					<div role='buttons-time'>
 						<div role='buttons'>
 							<div role='play'>
