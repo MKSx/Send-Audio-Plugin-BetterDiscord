@@ -1027,7 +1027,7 @@ module.exports = (Plugin, Api) => {
             this.record.previewing = false;
             this.record.limitStop = false;
 
-            if(typeof this.buttons instanceof 'object' && 'group' in this.buttons && this.buttons.group instanceof Element){
+            if(typeof this.buttons == 'object' && 'group' in this.buttons && this.buttons.group instanceof Element){
             	this.buttons.save.disabled = false;
             	this.buttons.send.disabled = false;
             }
