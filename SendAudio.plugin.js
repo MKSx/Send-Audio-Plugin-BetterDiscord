@@ -30,7 +30,7 @@ if(!('SendAudio_ZLibrary' in global))
     global.SendAudio_ZLibrary = ('ZLibrary' in global);
 
 var SendAudio = (() => {
-    const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.1.3","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":""},"main":"index.js","defaultConfig":[{"type":"switch","name":"Preview record","id":"preview","value":false,"note":"Allows audio to be heard before being sent"},{"type":"switch","name":"Using nitro","id":"nitro","value":false,"note":"If you are using discord nitro increases the file size that can be used from 8 MB to 50 MB"},{"type":"dropdown","name":"Audio input","id":"devices","note":"The audio recording device that will be used","options":[{"label":"Default","value":"default"}],"value":"default"},{"type":"dropdown","name":"File format","id":"mimetype","note":"The type of file that will be sent","options":[{"label":"mp3","value":"audio/mp3"},{"label":"ogg","value":"audio/ogg"},{"label":"wav","value":"audio/wav"},{"label":"opus","value":"audio/webm;codecs=opus"},{"label":"webm","value":"audio/webm"}],"value":"audio/mp3"}]};
+    const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.1.4","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":""},"main":"index.js","defaultConfig":[{"type":"switch","name":"Preview record","id":"preview","value":false,"note":"Allows audio to be heard before being sent"},{"type":"switch","name":"Using nitro","id":"nitro","value":false,"note":"If you are using discord nitro increases the file size that can be used from 8 MB to 50 MB"},{"type":"dropdown","name":"Audio input","id":"devices","note":"The audio recording device that will be used","options":[{"label":"Default","value":"default"}],"value":"default"},{"type":"dropdown","name":"File format","id":"mimetype","note":"The type of file that will be sent","options":[{"label":"mp3","value":"audio/mp3"},{"label":"ogg","value":"audio/ogg"},{"label":"wav","value":"audio/wav"},{"label":"opus","value":"audio/webm;codecs=opus"},{"label":"webm","value":"audio/webm"}],"value":"audio/mp3"}]};
 
 
     //local lib not found
@@ -1116,7 +1116,7 @@ var SendAudio = (() => {
             this.record.previewing = false;
             this.record.limitStop = false;
 
-            if(this.buttons.group instanceof Element){
+            if(typeof this.buttons == 'object' && 'group' in this.buttons && this.buttons.group instanceof Element){
             	this.buttons.save.disabled = false;
             	this.buttons.send.disabled = false;
             }
