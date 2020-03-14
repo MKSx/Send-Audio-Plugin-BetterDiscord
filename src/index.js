@@ -770,8 +770,9 @@ module.exports = (Plugin, Api) => {
                 return false;
 
             let buttons_ = document.querySelector(`div[class="buttons-3JBrkn da-buttons"]`);
+			let uploadButton = document.getElementsByClassName('attachButton-2WznTc');
 
-            if(!(buttons_ instanceof Element))
+            if(!(buttons_ instanceof Element) || (!uploadButton || !(uploadButton[0] instanceof Element)))
                 return false;
 
             this.buttons = {
