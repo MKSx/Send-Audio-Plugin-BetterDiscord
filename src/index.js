@@ -770,9 +770,8 @@ module.exports = (Plugin, Api) => {
                 return false;
 
             let buttons_ = document.querySelector(`div[class="buttons-3JBrkn da-buttons"]`);
-			let uploadButton = document.getElementsByClassName('attachButton-2WznTc');
 
-            if(!(buttons_ instanceof Element) || (!uploadButton || !(uploadButton[0] instanceof Element)))
+            if(!(buttons_ instanceof Element))
                 return false;
 
             this.buttons = {
@@ -1028,7 +1027,7 @@ module.exports = (Plugin, Api) => {
             this.record.previewing = false;
             this.record.limitStop = false;
 
-            if(this.buttons.group instanceof Element){
+            if(typeof this.buttons instanceof 'object' && 'group' in this.buttons && this.buttons.group instanceof Element){
             	this.buttons.save.disabled = false;
             	this.buttons.send.disabled = false;
             }
