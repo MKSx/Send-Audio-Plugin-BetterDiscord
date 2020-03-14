@@ -731,7 +731,7 @@ var SendAudio = (() => {
             }
         };
     })(DiscordModules.KeyGenerator, DOMTools);
-    return class Test extends Plugin {
+    return class SendAudio extends Plugin {
 
         onStart() {
             if(!document.getElementById('css-' + this.getName())){
@@ -1212,9 +1212,6 @@ var SendAudio = (() => {
             }
             if(this.panelInfo[1] instanceof Element)
                 this.panelInfo[1].value = `${convertToTime(this.record.time)} - ${convertData(this.record.size)}`;
-        }
-        observer(e){
-
         }
     };
 };
