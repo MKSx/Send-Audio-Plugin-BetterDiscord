@@ -549,7 +549,7 @@ var SendAudio = (() => {
             'right': 'tooltipLeft-3EDOk1'
         };
 
-        const root = document.querySelector(`div[class='layerContainer-yqaFcK da-layerContainer']`);
+        const root = document.querySelectorAll(`div[class='layerContainer-yqaFcK']`)[0];
 
         if(!root instanceof Element)
             return null;
@@ -857,7 +857,7 @@ var SendAudio = (() => {
         	if(document.getElementById('sendAudioButtons') instanceof Element)
                 return false;
 
-            let buttons_ = document.querySelector(`div[class="buttons-3JBrkn da-buttons"]`);
+            let buttons_ = document.querySelector(`div[class="buttons-3JBrkn"]`);
             let uploadButton = document.getElementsByClassName('attachButton-2WznTc');
 
             if(!(buttons_ instanceof Element) || (!uploadButton || !(uploadButton[0] instanceof Element)))
