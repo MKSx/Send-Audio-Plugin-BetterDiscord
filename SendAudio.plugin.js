@@ -549,7 +549,7 @@ var SendAudio = (() => {
             'right': 'tooltipLeft-3EDOk1'
         };
 
-        const root = document.querySelectorAll(`div[class='layerContainer-yqaFcK']`)[0];
+        const root = document.querySelector(`.layerContainer-yqaFcK:nth-of-type(2)`)
 
         if(!root instanceof Element)
             return null;
