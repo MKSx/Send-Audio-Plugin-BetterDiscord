@@ -29,8 +29,8 @@ if(!('SendAudio_downloadModal' in global))
 if(!('SendAudio_ZLibrary' in global))
     global.SendAudio_ZLibrary = ('ZLibrary' in global);
 
-var SendAudio = (() => {
-    const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.1.4","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","name":"Preview record","id":"preview","value":false,"note":"Allows audio to be heard before being sent"},{"type":"switch","name":"Using nitro","id":"nitro","value":false,"note":"If you are using discord nitro increases the file size that can be used from 8 MB to 50 MB"},{"type":"dropdown","name":"Audio input","id":"devices","note":"The audio recording device that will be used","options":[{"label":"Default","value":"default"}],"value":"default"},{"type":"dropdown","name":"File format","id":"mimetype","note":"The type of file that will be sent","options":[{"label":"mp3","value":"audio/mp3"},{"label":"ogg","value":"audio/ogg"},{"label":"wav","value":"audio/wav"},{"label":"opus","value":"audio/webm;codecs=opus"},{"label":"webm","value":"audio/webm"}],"value":"audio/mp3"}]};
+module.exports = (() => {
+    const config = {"info":{"name":"Send Audio","authors":[{"name":"Matues","discord_id":"301016626579505162","github_username":"MKSx"}],"version":"1.1.5","description":"Record and send audios in chat","github":"https://github.com/MKSx/EnviarAudio-BetterDiscord","github_raw":"https://raw.githubusercontent.com/MKSx/Send-Audio-Plugin-BetterDiscord/master/SendAudio.plugin.js"},"main":"index.js","defaultConfig":[{"type":"switch","name":"Preview record","id":"preview","value":false,"note":"Allows audio to be heard before being sent"},{"type":"switch","name":"Using nitro","id":"nitro","value":false,"note":"If you are using discord nitro increases the file size that can be used from 8 MB to 50 MB"},{"type":"dropdown","name":"Audio input","id":"devices","note":"The audio recording device that will be used","options":[{"label":"Default","value":"default"}],"value":"default"},{"type":"dropdown","name":"File format","id":"mimetype","note":"The type of file that will be sent","options":[{"label":"mp3","value":"audio/mp3"},{"label":"ogg","value":"audio/ogg"},{"label":"wav","value":"audio/wav"},{"label":"opus","value":"audio/webm;codecs=opus"},{"label":"webm","value":"audio/webm"}],"value":"audio/mp3"}]};
 
 
     //local lib not found
@@ -258,14 +258,14 @@ var SendAudio = (() => {
                 this.playerClose = this.playerRef.find(`div[role=header] div`);
                 this.playerTitle = this.playerRef.find(`div[role=header] input`);
 
-                this.playerClose.on('click', _ => this.close());
+                this.playerClose.addEventListener('click', _ => this.close());
 
                 this.playerTime.duration = this.playerRef.find(`div[class='durationTimeWrapper-OugPFt da-durationTimeWrapper']`).lastElementChild;
                 this.playerTime.current = this.playerRef.find(`div[class='durationTimeWrapper-OugPFt da-durationTimeWrapper']`).firstElementChild;
 
                 this.playerButton = this.playerRef.find(`div[role="button"]`);
 
-                this.playerButton.on('click', _ => {
+                this.playerButton.addEventListener('click', _ => {
                     if(!(this.audio instanceof Audio) || this.audio.readyState == 0)
                         return;
 
@@ -274,7 +274,7 @@ var SendAudio = (() => {
                     else
                         this.audio.pause();
                 });
-                this.playerVolume.button.on('click', _ => {
+                this.playerVolume.button.addEventListener('click', _ => {
                     if(!(this.audio instanceof Audio) || this.audio.readyState == 0)
                         return;
 
@@ -347,21 +347,21 @@ var SendAudio = (() => {
                     
                 };
 
-                this.playerVolume.button.on('mouseover', showVolumeBar);
-                this.playerVolume.button.on('mouseout', hideVolumeBar);
-                this.playerVolume.ref.firstElementChild.on('mouseover', showVolumeBar);
-                this.playerVolume.ref.firstElementChild.on('mouseout', hideVolumeBar);
+                this.playerVolume.button.addEventListener('mouseover', showVolumeBar);
+                this.playerVolume.button.addEventListener('mouseout', hideVolumeBar);
+                this.playerVolume.ref.firstElementChild.addEventListener('mouseover', showVolumeBar);
+                this.playerVolume.ref.firstElementChild.addEventListener('mouseout', hideVolumeBar);
 
-                this.playerVolume.bar.parentNode.on('click', e => moveVolumeBar(e, true));
-                this.playerVolume.bar.parentNode.on('mousemove', e => moveVolumeBar(e));
-                this.playerVolume.bar.parentNode.on('mousedown', _ => this.playerVolume.moving = true);
-                this.playerVolume.bar.parentNode.on('mouseup', _ => this.playerVolume.moving = false);
-                this.playerVolume.bar.parentNode.on('mouseleave', _ => this.playerVolume.moving = false);
+                this.playerVolume.bar.parentNode.addEventListener('click', e => moveVolumeBar(e, true));
+                this.playerVolume.bar.parentNode.addEventListener('mousemove', e => moveVolumeBar(e));
+                this.playerVolume.bar.parentNode.addEventListener('mousedown', _ => this.playerVolume.moving = true);
+                this.playerVolume.bar.parentNode.addEventListener('mouseup', _ => this.playerVolume.moving = false);
+                this.playerVolume.bar.parentNode.addEventListener('mouseleave', _ => this.playerVolume.moving = false);
 
-                this.playerDuration.ref.on('click', e => moveBar(e, true));
-                this.playerDuration.ref.on('mousemove', e => moveBar(e));
+                this.playerDuration.ref.addEventListener('click', e => moveBar(e, true));
+                this.playerDuration.ref.addEventListener('mousemove', e => moveBar(e));
 
-                this.playerDuration.ref.on('mousedown', _ => {
+                this.playerDuration.ref.addEventListener('mousedown', _ => {
                     if(this.audio instanceof Audio && this.audio.readyState != 0){
                         this.playerDuration.moving = true;
 
@@ -381,8 +381,8 @@ var SendAudio = (() => {
                     }
                 };
 
-                this.playerDuration.ref.on('mouseup', dragEnd);
-                this.playerDuration.ref.on('mouseleave', dragEnd);
+                this.playerDuration.ref.addEventListener('mouseup', dragEnd);
+                this.playerDuration.ref.addEventListener('mouseleave', dragEnd);
 
                 this.playerRef.style.display = 'none';
 
@@ -435,7 +435,7 @@ var SendAudio = (() => {
                 this.audioReady = audio.readyState != 0;
                 if(audio.readyState == 0){
                     this.playerTime.duration.innerHTML = '--:--:--';
-                    audio.on('loadedmetadata', async _ => {
+                    audio.addEventListener('loadedmetadata', async _ => {
                     	await fix_audio();
                         this.audioReady = this.audio.readyState != 0;
                         this.playerTime.duration.innerHTML = convertToTime(audio.duration);
@@ -449,11 +449,11 @@ var SendAudio = (() => {
                 this.audio = audio;
                 this.playerVolume.bar.style.width = `${this.audio.volume * 100}%`;
                 this.playerTime.current.innerHTML = '00:00:00';
-                this.audio.on('timeupdate', _ => {
+                this.audio.addEventListener('timeupdate', _ => {
                     this.playerDuration.current.style.width = `${(this.audio.currentTime / this.audio.duration) * 100}%`;
                     this.playerTime.current.innerHTML = convertToTime(this.audio.currentTime);
                 });
-                this.audio.on('volumechange', _ => {
+                this.audio.addEventListener('volumechange', _ => {
                     this.playerVolume.bar.style.width = `${this.audio.volume * 100}%`;
                     if(this.audio.volume == 0){ 
                         this.playerVolume.button.innerHTML = `<div tabindex="0" role="button"><svg name="SpeakerOff" class="controlIcon-3cRbti da-controlIcon" aria-hidden="false" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M13.5,9 C13.5,7.23 12.48,5.71 11,4.97 L11,7.18 L13.45,9.63 C13.48,9.43 13.5,9.22 13.5,9 L13.5,9 Z M16,9 C16,9.94 15.8,10.82 15.46,11.64 L16.97,13.15 C17.63,11.91 18,10.5 18,9 C18,4.72 15.01,1.14 11,0.23 L11,2.29 C13.89,3.15 16,5.83 16,9 L16,9 Z M1.27,0 L0,1.27 L4.73,6 L0,6 L0,12 L4,12 L9,17 L9,10.27 L13.25,14.52 C12.58,15.04 11.83,15.45 11,15.7 L11,17.76 C12.38,17.45 13.63,16.81 14.69,15.95 L16.73,18 L18,16.73 L9,7.73 L1.27,0 L1.27,0 Z M9,1 L6.91,3.09 L9,5.18 L9,1 L9,1 Z" transform="translate(3 3)"></path></svg></div>`;
@@ -469,15 +469,15 @@ var SendAudio = (() => {
                         }
                     }
                 });
-                this.audio.on('play', _ => {
+                this.audio.addEventListener('play', _ => {
                     this.playerButton.innerHTML = `<svg name="Pause" class="controlIcon-3cRbti da-controlIcon" aria-hidden="false" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M0,14 L4,14 L4,0 L0,0 L0,14 L0,14 Z M8,0 L8,14 L12,14 L12,0 L8,0 L8,0 Z" transform="translate(6 5)"></path></svg>`;
                 });
 
-                this.audio.on('pause', _ => {
+                this.audio.addEventListener('pause', _ => {
                     this.playerButton.innerHTML = `<svg name="Play" class="controlIcon-3cRbti da-controlIcon" aria-hidden="false" width="16" height="16" viewBox="0 0 24 24"><polygon fill="currentColor" points="0 0 0 14 11 7" transform="translate(7 5)"></polygon></svg>`;
                 });
                 
-                this.audio.on('ended', _ => {
+                this.audio.addEventListener('ended', _ => {
                     this.playerButton.innerHTML = `<svg name="Replay" class="controlIcon-3cRbti da-controlIcon" aria-hidden="false" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12,5 L12,1 L7,6 L12,11 L12,7 C15.31,7 18,9.69 18,13 C18,16.31 15.31,19 12,19 C8.69,19 6,16.31 6,13 L4,13 C4,17.42 7.58,21 12,21 C16.42,21 20,17.42 20,13 C20,8.58 16.42,5 12,5 L12,5 Z"></path></svg>`;
                 });
                 return true;
@@ -594,8 +594,8 @@ var SendAudio = (() => {
                 if(node instanceof Element){
                     this.update();
                     this.props.target.setAttribute('tooltip-id', this.props.id);
-                    node.on('mouseenter.Tooltip', _ => this.show());
-                    node.on('mouseleave.Tooltip', _ => this.hide());
+                    node.addEventListener('mouseenter', this.show);
+                    node.addEventListener('mouseleave', this.hide);
                 }
             }
             show(){
@@ -636,12 +636,12 @@ var SendAudio = (() => {
             setTarget(node){
                 if(node instanceof Element){
                     if(this.props.target instanceof Element){
-                        this.props.target.off('mouseenter.Tooltip');
-                        this.props.target.off('mouseleave.Tooltip');
+                        this.props.target.removeEventListener('mouseenter', this.show);
+                        this.props.target.removeEventListener('mouseleave', this.hide);
                     }
                     this.props.target = node;
-                    node.on('mouseenter.Tooltip', _ => this.show());
-                    node.on('mouseleave.Tooltip', _ => this.hide());
+                    node.addEventListener('mouseenter', this.show);
+                    node.addEventListener('mouseleave', this.hide);
 
                     if(this.removed)
                         this.create();
@@ -684,8 +684,8 @@ var SendAudio = (() => {
                 if(!this.removed){
                     
                     if(this.props.target instanceof Element){
-                        this.props.target.off('mouseenter.Tooltip');
-                        this.props.target.off('mouseleave.Tooltip');
+                        this.props.target.removeEventListener('mouseenter', this.show);
+                        this.props.target.removeEventListener('mouseleave', this.hide);
                     }
 
                     if(this.props.ref instanceof Element)
@@ -713,7 +713,7 @@ var SendAudio = (() => {
                 this.Offsets = {
                     target: this.props.target.getBoundingClientRect(),
                     ref: this.props.ref.getBoundingClientRect(),
-                    pointerRef: this.props.ref.find(`div[class~='da-tooltipPointer']`).getBoundingClientRect()
+                    pointerRef: this.props.ref.querySelector(`div[class~='da-tooltipPointer']`).getBoundingClientRect()
                 };
 
                 const { top, left } = calcAxis(this.props.type, this.Offsets.target, this.Offsets.ref, this.Offsets.pointerRef);
@@ -892,12 +892,12 @@ var SendAudio = (() => {
             const plugin = this;
 
             
-            this.buttons.record.on('click', _ => {
+            this.buttons.record.addEventListener('click', _ => {
                 if(!plugin.recordStart()){
                     Logger.warn("Cannot start recording");
                 }
             });
-            this.buttons.cancel.on('click', _ => {
+            this.buttons.cancel.addEventListener('click', _ => {
                 if(plugin.record.previewing == true){
                     plugin.recordReset();
 
@@ -908,10 +908,10 @@ var SendAudio = (() => {
                     plugin.recordStop();
                 }
             });
-            this.buttons.pause.on('click', _ => plugin.recordPause());
-            this.buttons.play.on('click', _ => plugin.recordResume());
-            this.buttons.save.on('click', _ => plugin.recordStop());
-            this.buttons.send.on('click', _ => {
+            this.buttons.pause.addEventListener('click', _ => plugin.recordPause());
+            this.buttons.play.addEventListener('click', _ => plugin.recordResume());
+            this.buttons.save.addEventListener('click', _ => plugin.recordStop());
+            this.buttons.send.addEventListener('click', _ => {
                 if(plugin.record.previewing == true){
                     if(plugin.record.channel){
                         sendAudio(plugin.record.channel.id, plugin.record.blob);
