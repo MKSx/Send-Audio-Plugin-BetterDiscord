@@ -549,7 +549,7 @@ module.exports = (() => {
             'right': 'tooltipLeft-3EDOk1'
         };
 
-        const root = document.querySelector(`div[class='layerContainer-yqaFcK da-layerContainer']`);
+        const root = document.querySelector(`.layerContainer-yqaFcK:nth-of-type(2)`)
 
         if(!root instanceof Element)
             return null;
@@ -857,7 +857,7 @@ module.exports = (() => {
         	if(document.getElementById('sendAudioButtons') instanceof Element)
                 return false;
 
-            let buttons_ = document.querySelector(`div[class="buttons-3JBrkn da-buttons"]`);
+            let buttons_ = document.querySelector(`div[class="buttons-3JBrkn"]`);
             let uploadButton = document.getElementsByClassName('attachButton-2WznTc');
 
             if(!(buttons_ instanceof Element) || (!uploadButton || !(uploadButton[0] instanceof Element)))
