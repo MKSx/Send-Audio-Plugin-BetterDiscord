@@ -76,7 +76,7 @@ module.exports = (Plugin, Api) => {
 
         date = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
 
-        return Upload.upload(channel, new File([blob], randomKey(3) + '-'  + date.substr(0, 10) + '-' + date.substr(11, 8).replace(/:/g, '-') + '.mp3'), {content: '', tts: false});
+        return Upload.upload(channel, new File([blob], randomKey(3) + '-'  + date.substr(0, 10) + '-' + date.substr(11, 8).replace(/:/g, '-') + '.ogg'), {content: '', tts: false});
     };
 
     const DiscordPlayer = (() => {
